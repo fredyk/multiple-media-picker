@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.WindowManager;
 
+import com.erikagtierrez.multiple_media_picker.fragment.AudioFragment;
 import com.erikagtierrez.multiple_media_picker.fragment.ImageFragment;
 import com.erikagtierrez.multiple_media_picker.fragment.VideoFragment;
 
@@ -83,10 +84,12 @@ public class Gallery extends AppCompatActivity {
         if(mode==1 || mode==2) {
             adapter.addFragment(new ImageFragment(), "Images");
         }
-        if(mode==1||mode==3)
-        adapter.addFragment(new VideoFragment(), "Videos");
-        if(mode==1||mode==3)
-            adapter.addFragment(new VideoFragment(), "Audio");
+        if(mode==1||mode==3){
+            adapter.addFragment(new VideoFragment(), "Videos");
+        }
+        if(mode==1||mode==4){
+            adapter.addFragment(new AudioFragment(), "Audio");
+        }
         viewPager.setAdapter(adapter);
     }
 

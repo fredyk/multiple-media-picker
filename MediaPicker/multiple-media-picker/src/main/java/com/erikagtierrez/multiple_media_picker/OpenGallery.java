@@ -15,6 +15,7 @@ import android.view.WindowManager;
 import com.erikagtierrez.multiple_media_picker.adapter.MediaAdapter;
 import com.erikagtierrez.multiple_media_picker.fragment.ImageFragment;
 import com.erikagtierrez.multiple_media_picker.fragment.VideoFragment;
+import com.erikagtierrez.multiple_media_picker.fragment.AudioFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,10 +61,11 @@ public class OpenGallery extends AppCompatActivity {
         if (parent.equals("Images")) {
             mediaList.addAll(ImageFragment.imagesList);
             selected.addAll(ImageFragment.selected);
-        } else {
+        }else if(parent.equals("Videos")){
             mediaList.addAll(VideoFragment.videosList);
             selected.addAll(VideoFragment.selected);
         }
+
         populateRecyclerView();
     }
 

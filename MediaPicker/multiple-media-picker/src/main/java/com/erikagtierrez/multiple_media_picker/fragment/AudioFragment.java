@@ -15,9 +15,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.erikagtierrez.multiple_media_picker.OpenList;
 import com.erikagtierrez.multiple_media_picker.adapter.BucketsAdapter;
-import com.erikagtierrez.multiple_media_picker.OpenGallery;
 import com.erikagtierrez.multiple_media_picker.R;
+import com.erikagtierrez.multiple_media_picker.model.FileItem;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,11 +28,11 @@ import java.util.List;
 public class AudioFragment extends Fragment{
     private static RecyclerView recyclerView;
     private BucketsAdapter mAdapter;
-    private final String[] projection = new String[]{ MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.Audio.Media.DATA };
-    private final String[] projection2 = new String[]{MediaStore.Images.Media.DISPLAY_NAME,MediaStore.Audio.Media.DATA };
+    private final String[] projection = new String[]{ MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.DATA };
+    private final String[] projection2 = new String[]{MediaStore.Audio.Media.DISPLAY_NAME,MediaStore.Audio.Media.DATA };
     private List<String> bucketNames= new ArrayList<>();
     private List<String> mp3List =new ArrayList<>();
-    public static List<String> audioList = new ArrayList<>();
+    private static ArrayList<FileItem> audioList = new ArrayList<>();
     public static List<Boolean> selected=new ArrayList<>();
 
     @Override
@@ -41,7 +42,7 @@ public class AudioFragment extends Fragment{
         mp3List.clear();
         audioList.clear();
         bucketNames.clear();
-        getAudioBuckets();
+        getAlbumOfAudioFiles();
     }
 
     @Override
@@ -63,9 +64,9 @@ public class AudioFragment extends Fragment{
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getContext(), recyclerView, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                getPictures(bucketNames.get(position));
-                Intent intent=new Intent(getContext(), OpenGallery.class);
-                intent.putExtra("FROM","Images");
+                getAudioFiles(bucketNames.get(position));
+                Intent intent=new Intent(getContext(), OpenList.class);
+                intent.putExtra("data", audioList);
                 startActivity(intent);
             }
 
@@ -77,12 +78,13 @@ public class AudioFragment extends Fragment{
         mAdapter.notifyDataSetChanged();
     }
 
-    public void getAudioBuckets(){
+    public void getAlbumOfAudioFiles(){
+
         Cursor cursor = getContext().getContentResolver()
                 .query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection,
                         null, null, MediaStore.Audio.Media.DATE_ADDED);
         ArrayList<String> bucketNamesTEMP = new ArrayList<>(cursor.getCount());
-        ArrayList<String> bitmapListTEMP = new ArrayList<>(cursor.getCount());
+        ArrayList<String> mp3ListTEMP = new ArrayList<>(cursor.getCount());
         HashSet<String> albumSet = new HashSet<>();
         File file;
         if (cursor.moveToLast()) {
@@ -91,11 +93,11 @@ public class AudioFragment extends Fragment{
                     return;
                 }
                 String album = cursor.getString(cursor.getColumnIndex(projection[0]));
-                String image = cursor.getString(cursor.getColumnIndex(projection[1]));
-                file = new File(image);
+                String song = cursor.getString(cursor.getColumnIndex(projection[1]));
+                file = new File(song);
                 if (file.exists() && !albumSet.contains(album)) {
                     bucketNamesTEMP.add(album);
-                    bitmapListTEMP.add(image);
+                    mp3ListTEMP.add(song);
                     albumSet.add(album);
                 }
             } while (cursor.moveToPrevious());
@@ -107,37 +109,42 @@ public class AudioFragment extends Fragment{
         bucketNames.clear();
         mp3List.clear();
         bucketNames.addAll(bucketNamesTEMP);
-        mp3List.addAll(bitmapListTEMP);
+        mp3List.addAll(mp3ListTEMP);
     }
 
-    public void getPictures(String bucket){
+    public void getAudioFiles(String album){
         selected.clear();
         Cursor cursor = getContext().getContentResolver()
-                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection2,
-                         MediaStore.Images.Media.BUCKET_DISPLAY_NAME+" =?",new String[]{bucket},MediaStore.Images.Media.DATE_ADDED);
-        ArrayList<String> imagesTEMP = new ArrayList<>(cursor.getCount());
-        HashSet<String> albumSet = new HashSet<>();
+                .query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection2,
+                         MediaStore.Audio.Media.ALBUM+" =?",new String[]{album},MediaStore.Images.Media.DATE_ADDED);
+        ArrayList<FileItem> songsOfAlbum = new ArrayList<>(cursor.getCount());
+        HashSet<String> fileSet = new HashSet<>();
         File file;
         if (cursor.moveToLast()) {
             do {
                 if (Thread.interrupted()) {
                     return;
                 }
+
+                int image = R.drawable.ic_audio;
+                String name = cursor.getString(cursor.getColumnIndex(projection2[0]));
                 String path = cursor.getString(cursor.getColumnIndex(projection2[1]));
                 file = new File(path);
-                if (file.exists() && !albumSet.contains(path)) {
-                    imagesTEMP.add(path);
-                    albumSet.add(path);
+
+                if (file.exists() && !fileSet.contains(path)) {
+                    songsOfAlbum.add(new FileItem(image,name,path));
+                    fileSet.add(path);
                     selected.add(false);
                 }
+
             } while (cursor.moveToPrevious());
         }
         cursor.close();
-        if (imagesTEMP == null) {
-            imagesTEMP = new ArrayList<>();
+        if (songsOfAlbum == null) {
+            songsOfAlbum = new ArrayList<>();
         }
         audioList.clear();
-        audioList.addAll(imagesTEMP);
+        audioList.addAll(songsOfAlbum);
     }
 
     public interface ClickListener {
