@@ -12,10 +12,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 
-import com.erikagtierrez.multiple_media_picker.Adapters.MediaAdapter;
-import com.erikagtierrez.multiple_media_picker.Fragments.OneFragment;
-import com.erikagtierrez.multiple_media_picker.Fragments.TwoFragment;
-import com.erikagtierrez.multiple_media_picker.R;
+import com.erikagtierrez.multiple_media_picker.adapter.MediaAdapter;
+import com.erikagtierrez.multiple_media_picker.fragment.ImageFragment;
+import com.erikagtierrez.multiple_media_picker.fragment.VideoFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,11 +58,11 @@ public class OpenGallery extends AppCompatActivity {
         mediaList.clear();
         selected.clear();
         if (parent.equals("Images")) {
-            mediaList.addAll(OneFragment.imagesList);
-            selected.addAll(OneFragment.selected);
+            mediaList.addAll(ImageFragment.imagesList);
+            selected.addAll(ImageFragment.selected);
         } else {
-            mediaList.addAll(TwoFragment.videosList);
-            selected.addAll(TwoFragment.selected);
+            mediaList.addAll(VideoFragment.videosList);
+            selected.addAll(VideoFragment.selected);
         }
         populateRecyclerView();
     }

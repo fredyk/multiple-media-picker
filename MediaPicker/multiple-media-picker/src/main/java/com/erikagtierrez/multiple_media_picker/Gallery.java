@@ -1,25 +1,20 @@
 package com.erikagtierrez.multiple_media_picker;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.WindowManager;
 
-import com.erikagtierrez.multiple_media_picker.Fragments.OneFragment;
-import com.erikagtierrez.multiple_media_picker.Fragments.TwoFragment;
-import com.erikagtierrez.multiple_media_picker.R;
+import com.erikagtierrez.multiple_media_picker.fragment.ImageFragment;
+import com.erikagtierrez.multiple_media_picker.fragment.VideoFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,10 +81,12 @@ public class Gallery extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         if(mode==1 || mode==2) {
-            adapter.addFragment(new OneFragment(), "Images");
+            adapter.addFragment(new ImageFragment(), "Images");
         }
         if(mode==1||mode==3)
-        adapter.addFragment(new TwoFragment(), "Videos");
+        adapter.addFragment(new VideoFragment(), "Videos");
+        if(mode==1||mode==3)
+            adapter.addFragment(new VideoFragment(), "Audio");
         viewPager.setAdapter(adapter);
     }
 
