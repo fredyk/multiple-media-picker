@@ -56,7 +56,7 @@ public class AudioFragment extends Fragment{
     }
 
     private void populateRecyclerView() {
-        mAdapter = new BucketsAdapter(bucketNames, mp3List,getContext());
+        mAdapter = new BucketsAdapter(R.drawable.audio_album, bucketNames, mp3List,getContext());
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getContext(),3);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());

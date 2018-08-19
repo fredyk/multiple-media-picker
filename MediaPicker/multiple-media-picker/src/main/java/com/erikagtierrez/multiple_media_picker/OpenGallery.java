@@ -34,9 +34,9 @@ public class OpenGallery extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_open_gallery);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -46,7 +46,7 @@ public class OpenGallery extends AppCompatActivity {
         toolbar.setNavigationIcon(R.drawable.arrow_back);
         setTitle(Gallery.title);
         if (imagesSelected.size() > 0) {
-            setTitle(String.valueOf(imagesSelected.size()));
+            setTitle(String.valueOf(imagesSelected.size()) + " / " + getIntent().getExtras().getInt("maxSelection"));
         }
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,7 +54,7 @@ public class OpenGallery extends AppCompatActivity {
                 onBackPressed();
             }
         });
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView = findViewById(R.id.recycler_view);
         parent = getIntent().getExtras().getString("FROM");
         mediaList.clear();
         selected.clear();
@@ -99,7 +99,7 @@ public class OpenGallery extends AppCompatActivity {
                 }
                 Gallery.selectionTitle = imagesSelected.size();
                 if (imagesSelected.size() != 0) {
-                    setTitle(String.valueOf(imagesSelected.size()));
+                    setTitle(String.valueOf(imagesSelected.size()) + " / " + getIntent().getExtras().getInt("maxSelection"));
                 } else {
                     setTitle(Gallery.title);
                 }

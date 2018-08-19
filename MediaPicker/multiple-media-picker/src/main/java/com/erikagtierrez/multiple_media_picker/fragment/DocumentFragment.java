@@ -1,8 +1,9 @@
 package com.erikagtierrez.multiple_media_picker.fragment;
 
+import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
@@ -15,33 +16,31 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.erikagtierrez.multiple_media_picker.adapter.BucketsAdapter;
-import com.erikagtierrez.multiple_media_picker.OpenGallery;
 import com.erikagtierrez.multiple_media_picker.R;
+import com.erikagtierrez.multiple_media_picker.adapter.BucketsAdapter;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class ImageFragment extends Fragment{
+public class DocumentFragment extends Fragment {
+
     private static RecyclerView recyclerView;
     private BucketsAdapter mAdapter;
-    private final String[] projection = new String[]{ MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.Images.Media.DATA };
-    private final String[] projection2 = new String[]{MediaStore.Images.Media.DISPLAY_NAME,MediaStore.Images.Media.DATA };
-    private List<String> bucketNames= new ArrayList<>();
-    private List<String> bitmapList=new ArrayList<>();
-    public static List<String> imagesList= new ArrayList<>();
+    private List<String> documentNames = new ArrayList<>();
+    private List<String> documentPathList =new ArrayList<>();
+    public static List<String> documentList = new ArrayList<>();
     public static List<Boolean> selected=new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Bucket names reloaded
-        bitmapList.clear();
-        imagesList.clear();
-        bucketNames.clear();
-        getPicBuckets();
+        documentPathList.clear();
+        documentList.clear();
+        documentNames.clear();
+        getDocumentBuckets();
     }
 
     @Override
@@ -55,7 +54,7 @@ public class ImageFragment extends Fragment{
     }
 
     private void populateRecyclerView() {
-        mAdapter = new BucketsAdapter(R.drawable.image_album,bucketNames,bitmapList,getContext());
+        mAdapter = new BucketsAdapter(-1, documentNames, documentPathList,getContext());
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getContext(),3);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -63,11 +62,14 @@ public class ImageFragment extends Fragment{
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getContext(), recyclerView, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                getPictures(bucketNames.get(position));
+                final String document = documentNames.get(position);
+                System.out.println(document);
+                // TODO mark as checked.
+                /**
                 Intent intent=new Intent(getContext(), OpenGallery.class);
                 intent.putExtra("FROM","Images");
-                intent.putExtra("maxSelection", ImageFragment.this.getActivity().getIntent().getExtras().getInt("maxSelection"));
                 startActivity(intent);
+                 */
             }
 
             @Override
@@ -78,67 +80,60 @@ public class ImageFragment extends Fragment{
         mAdapter.notifyDataSetChanged();
     }
 
-    public void getPicBuckets(){
-        Cursor cursor = getContext().getContentResolver()
-                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection,
-                        null, null, MediaStore.Images.Media.DATE_ADDED);
-        ArrayList<String> bucketNamesTEMP = new ArrayList<>(cursor.getCount());
-        ArrayList<String> bitmapListTEMP = new ArrayList<>(cursor.getCount());
-        HashSet<String> albumSet = new HashSet<>();
+    public void getDocumentBuckets(){
+        final ContentResolver contentResolver = this.getContext().getContentResolver();
+        final Uri uri = MediaStore.Files.getContentUri("external");
+
+        final String[] projection = new String[] { MediaStore.Files.FileColumns.MIME_TYPE, MediaStore.Files.FileColumns.DISPLAY_NAME, MediaStore.Files.FileColumns.DATA };
+        final String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + "=? AND " + MediaStore.Files.FileColumns.MIME_TYPE + " IS NOT NULL";
+        final String[] selectionArgs = new String[]{ String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_NONE) };
+        final String sortOrder = MediaStore.Files.FileColumns.DATE_ADDED;
+
+        final Cursor cursor = contentResolver.query(uri, projection, selection, selectionArgs, sortOrder);
+
+        final ArrayList<String> documentNamesTEMP = new ArrayList<>(cursor.getCount());
+        final ArrayList<String> documentPathListTEMP = new ArrayList<>(cursor.getCount());
+        final HashSet<String> fileNames = new HashSet<>();
         File file;
+
         if (cursor.moveToLast()) {
             do {
                 if (Thread.interrupted()) {
                     return;
                 }
-                String album = cursor.getString(cursor.getColumnIndex(projection[0]));
-                String image = cursor.getString(cursor.getColumnIndex(projection[1]));
-                file = new File(image);
-                if (file.exists() && !albumSet.contains(album)) {
-                    bucketNamesTEMP.add(album);
-                    bitmapListTEMP.add(image);
-                    albumSet.add(album);
+
+                final String mimeType = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.MIME_TYPE));
+                if(isAllowed(mimeType)) {
+                    final String fileName = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DISPLAY_NAME));
+                    final String image = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA));
+
+                    file = new File(image);
+                    if (file.exists() && !fileNames.contains(fileName)) {
+                        documentNamesTEMP.add(fileName);
+                        documentPathListTEMP.add(image);
+                        fileNames.add(fileName);
+                    }
                 }
             } while (cursor.moveToPrevious());
         }
         cursor.close();
-        if (bucketNamesTEMP == null) {
-            bucketNames = new ArrayList<>();
+
+        if (documentNamesTEMP == null) {
+            documentNames = new ArrayList<>();
         }
-        bucketNames.clear();
-        bitmapList.clear();
-        bucketNames.addAll(bucketNamesTEMP);
-        bitmapList.addAll(bitmapListTEMP);
+        documentNames.clear();
+        documentPathList.clear();
+        documentNames.addAll(documentNamesTEMP);
+        documentPathList.addAll(documentPathListTEMP);
     }
 
-    public void getPictures(String bucket){
-        selected.clear();
-        Cursor cursor = getContext().getContentResolver()
-                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection2,
-                         MediaStore.Images.Media.BUCKET_DISPLAY_NAME+" =?",new String[]{bucket},MediaStore.Images.Media.DATE_ADDED);
-        ArrayList<String> imagesTEMP = new ArrayList<>(cursor.getCount());
-        HashSet<String> albumSet = new HashSet<>();
-        File file;
-        if (cursor.moveToLast()) {
-            do {
-                if (Thread.interrupted()) {
-                    return;
-                }
-                String path = cursor.getString(cursor.getColumnIndex(projection2[1]));
-                file = new File(path);
-                if (file.exists() && !albumSet.contains(path)) {
-                    imagesTEMP.add(path);
-                    albumSet.add(path);
-                    selected.add(false);
-                }
-            } while (cursor.moveToPrevious());
-        }
-        cursor.close();
-        if (imagesTEMP == null) {
-            imagesTEMP = new ArrayList<>();
-        }
-        imagesList.clear();
-        imagesList.addAll(imagesTEMP);
+    /**
+     *
+     * @param mimeType
+     * @return
+     */
+    private boolean isAllowed(String mimeType) {
+        return mimeType != null && !mimeType.startsWith("image") && !mimeType.startsWith("audio") && !mimeType.startsWith("video");
     }
 
     public interface ClickListener {
@@ -148,9 +143,9 @@ public class ImageFragment extends Fragment{
 
     public static class RecyclerTouchListener implements RecyclerView.OnItemTouchListener {
         private GestureDetector gestureDetector;
-        private ImageFragment.ClickListener clickListener;
+        private DocumentFragment.ClickListener clickListener;
 
-        public RecyclerTouchListener(Context context, final RecyclerView recyclerView, final ImageFragment.ClickListener clickListener) {
+        public RecyclerTouchListener(Context context, final RecyclerView recyclerView, final DocumentFragment.ClickListener clickListener) {
             this.clickListener = clickListener;
             gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
                 @Override

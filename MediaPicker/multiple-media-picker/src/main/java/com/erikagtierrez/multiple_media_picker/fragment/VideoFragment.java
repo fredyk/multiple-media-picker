@@ -56,7 +56,7 @@ public class VideoFragment extends Fragment{
     }
 
     private void populateRecyclerView() {
-        mAdapter = new BucketsAdapter(bucketNames,bitmapList,getContext());
+        mAdapter = new BucketsAdapter(R.drawable.video_album, bucketNames,bitmapList,getContext());
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getContext(),3);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -67,6 +67,7 @@ public class VideoFragment extends Fragment{
                 getVideos(bucketNames.get(position));
                 Intent intent=new Intent(getContext(), OpenGallery.class);
                 intent.putExtra("FROM","Videos");
+                intent.putExtra("maxSelection", VideoFragment.this.getActivity().getIntent().getExtras().getInt("maxSelection"));
                 startActivity(intent);
             }
 
