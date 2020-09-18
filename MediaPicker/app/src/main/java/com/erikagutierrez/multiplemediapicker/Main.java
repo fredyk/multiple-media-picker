@@ -15,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import com.erikagtierrez.multiple_media_picker.Gallery;
 
+import java.util.ArrayList;
+
 
 public class Main extends AppCompatActivity {
     static final int OPEN_MEDIA_PICKER = 1;  // The request code
@@ -79,8 +81,18 @@ public class Main extends AppCompatActivity {
     public void openGallery(View view) {
         Intent intent= new Intent(this, Gallery.class);
         intent.putExtra("title","Select media");
-        intent.putExtra("mode",1);
-        intent.putExtra("maxSelection",3);
+        intent.putExtra("mode",OPEN_MEDIA_PICKER);
+        intent.putExtra("maxSelection",20);
         startActivityForResult(intent,OPEN_MEDIA_PICKER);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == OPEN_MEDIA_PICKER && resultCode == RESULT_OK && data != null) {
+            final ArrayList<String> selectionResult = data.getStringArrayListExtra("result");
+            for (String file : selectionResult) {
+                System.out.println("File: " + file);
+            }
+        }
     }
 }

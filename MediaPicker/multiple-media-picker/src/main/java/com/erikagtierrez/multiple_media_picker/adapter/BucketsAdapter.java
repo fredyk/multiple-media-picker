@@ -1,4 +1,4 @@
-package com.erikagtierrez.multiple_media_picker.Adapters;
+package com.erikagtierrez.multiple_media_picker.adapter;
 
 
 import android.content.Context;
@@ -9,16 +9,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.erikagtierrez.multiple_media_picker.R;
 
 import java.util.List;
 
-public class BucketsAdapter extends RecyclerView.Adapter<BucketsAdapter.MyViewHolder>{
-    private List<String> bucketNames,bitmapList;
+public class BucketsAdapter extends RecyclerView.Adapter<BucketsAdapter.MyViewHolder> {
+    private List<String> bucketNames, bitmapList;
     private Context context;
+    private int fallbackImageId;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView title;
@@ -26,21 +25,21 @@ public class BucketsAdapter extends RecyclerView.Adapter<BucketsAdapter.MyViewHo
 
         public MyViewHolder(View view) {
             super(view);
-            title = (TextView) view.findViewById(R.id.title);
-            thumbnail=(ImageView) view.findViewById(R.id.image);
+            title = view.findViewById(R.id.title);
+            thumbnail = view.findViewById(R.id.image);
         }
     }
 
-    public BucketsAdapter(List<String> bucketNames,List<String> bitmapList,Context context) {
-        this.bucketNames=bucketNames;
+    public BucketsAdapter(int fallbackImageId, List<String> bucketNames, List<String> bitmapList, Context context) {
+        this.fallbackImageId = fallbackImageId;
+        this.bucketNames = bucketNames;
         this.bitmapList = bitmapList;
-        this.context=context;
+        this.context = context;
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.album_item, parent, false);
-
+        final View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.album_item, parent, false);
         return new MyViewHolder(itemView);
     }
 
@@ -48,7 +47,7 @@ public class BucketsAdapter extends RecyclerView.Adapter<BucketsAdapter.MyViewHo
     public void onBindViewHolder(MyViewHolder holder, int position) {
         bucketNames.get(position);
         holder.title.setText(bucketNames.get(position));
-        Glide.with(context).load("file://"+bitmapList.get(position)).apply(new RequestOptions().override(300,300).centerCrop()).into(holder.thumbnail);
+        Glide.with(context).load("file://" + bitmapList.get(position)).error(this.fallbackImageId).override(300, 300).centerCrop().into(holder.thumbnail);
     }
 
     @Override

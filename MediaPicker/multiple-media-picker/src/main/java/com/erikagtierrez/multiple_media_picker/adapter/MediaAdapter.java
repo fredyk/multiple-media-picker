@@ -1,4 +1,4 @@
-package com.erikagtierrez.multiple_media_picker.Adapters;
+package com.erikagtierrez.multiple_media_picker.adapter;
 
 
 import android.content.Context;

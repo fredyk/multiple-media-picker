@@ -13,8 +13,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.WindowManager;
 
-import com.erikagtierrez.multiple_media_picker.Fragments.OneFragment;
-import com.erikagtierrez.multiple_media_picker.Fragments.TwoFragment;
+import com.erikagtierrez.multiple_media_picker.fragment.AudioFragment;
+import com.erikagtierrez.multiple_media_picker.fragment.DocumentFragment;
+import com.erikagtierrez.multiple_media_picker.fragment.ImageFragment;
+import com.erikagtierrez.multiple_media_picker.fragment.VideoFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +36,7 @@ public class Gallery extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_gallery);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.arrow_back);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -44,7 +46,7 @@ public class Gallery extends AppCompatActivity {
             }
         });
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -59,9 +61,9 @@ public class Gallery extends AppCompatActivity {
         setTitle(title);
         selectionTitle=0;
 
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager =  findViewById(R.id.viewpager);
         setupViewPager(viewPager);
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
         OpenGallery.selected.clear();
@@ -73,7 +75,7 @@ public class Gallery extends AppCompatActivity {
     protected void onPostResume() {
         super.onPostResume();
         if(selectionTitle>0){
-            setTitle(String.valueOf(selectionTitle));
+            setTitle(String.valueOf(selectionTitle) + " / " + maxSelection);
         }
     }
 
@@ -81,10 +83,14 @@ public class Gallery extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         if(mode==1 || mode==2) {
-            adapter.addFragment(new OneFragment(), "Images");
+            adapter.addFragment(new ImageFragment(), getString(R.string.images));
         }
         if(mode==1||mode==3)
-            adapter.addFragment(new TwoFragment(), "Videos");
+        adapter.addFragment(new VideoFragment(), getString(R.string.videos));
+        if(mode==1||mode==4)
+            adapter.addFragment(new AudioFragment(), getString(R.string.audio));
+        if(mode==1||mode==5)
+            adapter.addFragment(new DocumentFragment(), getString(R.string.documents));
         viewPager.setAdapter(adapter);
     }
 
