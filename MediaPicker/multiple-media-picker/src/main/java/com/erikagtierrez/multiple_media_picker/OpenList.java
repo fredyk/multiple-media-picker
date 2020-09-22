@@ -1,16 +1,17 @@
 package com.erikagtierrez.multiple_media_picker;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.erikagtierrez.multiple_media_picker.adapter.ListAdapter;
 import com.erikagtierrez.multiple_media_picker.model.FileItem;
 
 import java.util.ArrayList;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class OpenList extends AppCompatActivity {
     private RecyclerView mRecyclerView;

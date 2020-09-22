@@ -2,7 +2,6 @@ package com.erikagtierrez.multiple_media_picker.adapter;
 
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,8 @@ import com.bumptech.glide.Glide;
 import com.erikagtierrez.multiple_media_picker.R;
 
 import java.util.List;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 public class BucketsAdapter extends RecyclerView.Adapter<BucketsAdapter.MyViewHolder> {
     private List<String> bucketNames, bitmapList;

@@ -2,7 +2,6 @@ package com.erikagtierrez.multiple_media_picker.adapter;
 
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +13,8 @@ import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOption
 import com.bumptech.glide.Glide;
 
 import java.util.List;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.MyViewHolder>{
     private List<String> bitmapList;

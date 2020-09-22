@@ -10,4 +10,6 @@
     <string name="audio">Audio</string>
     <string name="documents">Documents</string>
     <string name="title_activity_open_list">Open list</string>
+    <string name="image1">Image 1</string>
+    <string name="image2">Image 2</string>
 </resources>

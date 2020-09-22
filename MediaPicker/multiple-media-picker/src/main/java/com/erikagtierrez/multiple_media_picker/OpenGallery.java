@@ -2,11 +2,6 @@ package com.erikagtierrez.multiple_media_picker;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,10 +10,15 @@ import android.view.WindowManager;
 import com.erikagtierrez.multiple_media_picker.adapter.MediaAdapter;
 import com.erikagtierrez.multiple_media_picker.fragment.ImageFragment;
 import com.erikagtierrez.multiple_media_picker.fragment.VideoFragment;
-import com.erikagtierrez.multiple_media_picker.fragment.AudioFragment;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class OpenGallery extends AppCompatActivity {
     private RecyclerView recyclerView;
